@@ -31,17 +31,17 @@ FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 AS builder-gpu
 
 WORKDIR /build
 
-# Install Python 3.10 and build dependencies
+# Install Python 3.12 (default in Ubuntu 24.04) and build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.10 \
-    python3.10-dev \
+    python3.12 \
+    python3.12-dev \
     python3-pip \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Create symbolic links for python
-RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
-    ln -sf /usr/bin/python3.10 /usr/bin/python3
+RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
+    ln -sf /usr/bin/python3.12 /usr/bin/python3
 
 # Upgrade pip
 RUN python -m pip install --no-cache-dir --upgrade pip
@@ -50,6 +50,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip
 COPY requirements.txt .
 
 # Install Python dependencies with CUDA-enabled PyTorch
+# Using cu121 wheels which are forward compatible with CUDA 13.x
 RUN pip install --no-cache-dir --user \
     torch torchvision --index-url https://download.pytorch.org/whl/cu121 && \
     pip install --no-cache-dir --user -r requirements.txt
@@ -108,9 +109,9 @@ FROM nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04 AS runtime-gpu
 
 WORKDIR /app
 
-# Install Python 3.10 and runtime dependencies
+# Install Python 3.12 (default in Ubuntu 24.04) and runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.10 \
+    python3.12 \
     python3-pip \
     libgomp1 \
     libglib2.0-0 \
@@ -121,8 +122,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create symbolic links for python
-RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
-    ln -sf /usr/bin/python3.10 /usr/bin/python3
+RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
+    ln -sf /usr/bin/python3.12 /usr/bin/python3
 
 # Copy Python packages from builder
 COPY --from=builder-gpu /root/.local /root/.local
