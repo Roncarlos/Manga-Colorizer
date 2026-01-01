@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  manga-colorizer:
+    # Replace with your actual GitHub Container Registry image
+    # Format: ghcr.io/<username>/<repository>:gpu
+    # Example: ghcr.io/yourname/manga-colorizer:gpu
+    image: ghcr.io/yourname/manga-colorizer:gpu
+    
+    container_name: manga-colorizer-backend-gpu
+    
+    # NVIDIA Container Runtime
+    runtime: nvidia
+    
+    ports:
+      - "5000:5000"
+    
+    environment:
+      # Device selection
+      - DEVICE=cuda
+      
+      # Model paths (relative to /app in container)
+      - COLORIZER_PATH=networks/generator.zip
+      - UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
+      - EXTRACTOR_PATH=networks/extractor.pth
+      
+      # SSL configuration
+      - SSL_ENABLED=false
+      
+      # NVIDIA specific
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      
+      # Optional: Uncomment to disable specific features
+      # - NO_UPSCALE=true
+      # - NO_COLORIZE=true
+      # - NO_DENOISE=true
+    
+    volumes:
+      # Mount the networks directory containing model weights
+      # IMPORTANT: Download generator.zip before running!
+      - ./Backend/networks:/app/networks:ro
+      
+      # Mount denoising models
+      - ./Backend/denoising/models:/app/denoising/models:ro
+      
+      # Mount cache directory for processed images (persistent)
+      - manga-cache:/app/manga
+      
+      # Optional: Mount SSL certificates if needed
+      # - ./Backend/ssl:/app/ssl:ro
+      
+      # Optional: Mount input/output directories for batch processing
+      # - ./Backend/input:/app/input
+      # - ./Backend/output:/app/output
+    
+    restart: unless-stopped
+    
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  manga-cache:
+    driver: local

@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  manga-colorizer-dev:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: cpu  # Change to 'gpu' for GPU development
+    
+    container_name: manga-colorizer-dev
+    
+    # Uncomment for GPU development (requires nvidia-docker)
+    # runtime: nvidia
+    
+    ports:
+      - "5000:5000"
+    
+    environment:
+      # Device selection: 'cpu' or 'cuda'
+      - DEVICE=cpu
+      
+      # Model paths (relative to /app in container)
+      - COLORIZER_PATH=networks/generator.zip
+      - UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
+      - EXTRACTOR_PATH=networks/extractor.pth
+      
+      # SSL configuration (disabled for local dev)
+      - SSL_ENABLED=false
+      
+      # Python unbuffered output for better logging
+      - PYTHONUNBUFFERED=1
+    
+    volumes:
+      # Mount source code for live development
+      # Changes to Python files will be reflected without rebuild
+      - ./Backend:/app
+      
+      # Mount cache directory for processed images (persistent)
+      - manga-cache-dev:/app/manga
+      
+      # Optional: Override input/output directories
+      # - ./dev-input:/app/input
+      # - ./dev-output:/app/output
+    
+    # Auto-restart on failure
+    restart: unless-stopped
+    
+    # Development command with auto-reload
+    # Uses Flask's debug mode for auto-reloading on code changes
+    command: python app-stream.py --device cpu --no-ssl
+    
+    # Uncomment for GPU development
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    
+    # Healthcheck with shorter intervals for dev
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  manga-cache-dev:
+    driver: local
+
+# Alternative: GPU Development Configuration
+# Uncomment this entire section for GPU development
+#
+# services:
+#   manga-colorizer-dev-gpu:
+#     build:
+#       context: ./Backend
+#       dockerfile: Dockerfile
+#       args:
+#         BUILD_TYPE: gpu
+#     
+#     container_name: manga-colorizer-dev-gpu
+#     runtime: nvidia
+#     
+#     ports:
+#       - "5000:5000"
+#     
+#     environment:
+#       - DEVICE=cuda
+#       - COLORIZER_PATH=networks/generator.zip
+#       - UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
+#       - EXTRACTOR_PATH=networks/extractor.pth
+#       - SSL_ENABLED=false
+#       - PYTHONUNBUFFERED=1
+#       - NVIDIA_VISIBLE_DEVICES=all
+#       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+#     
+#     volumes:
+#       - ./Backend:/app
+#       - manga-cache-dev:/app/manga
+#     
+#     command: python app-stream.py --device cuda --no-ssl
+#     
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               count: 1
+#               capabilities: [gpu]
+#     
+#     restart: unless-stopped
+#
+# volumes:
+#   manga-cache-dev:
+#     driver: local

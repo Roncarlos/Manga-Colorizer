@@ -236,14 +236,22 @@ def initialize_components():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run Manga Colorizer server')
-    parser.add_argument('--device', choices=['cpu', 'cuda'], default='cuda', help='Device to use')
+    
+    # Get defaults from environment variables with fallbacks
+    default_device = os.getenv('DEVICE', 'cuda')
+    default_colorizer_path = os.getenv('COLORIZER_PATH', 'networks/generator.zip')
+    default_extractor_path = os.getenv('EXTRACTOR_PATH', 'networks/extractor.pth')
+    default_upscaler_path = os.getenv('UPSCALER_PATH', 'networks/RealESRGAN_x4plus_anime_6B.pt')
+    default_ssl_enabled = os.getenv('SSL_ENABLED', 'true').lower() in ('true', '1', 'yes')
+    
+    parser.add_argument('--device', choices=['cpu', 'cuda'], default=default_device, help='Device to use')
 
-    parser.add_argument('--colorizer_path', default='networks/generator.zip')
-    parser.add_argument('--extractor_path', default='networks/extractor.pth')
-    parser.add_argument('--upscaler_path', default='networks/RealESRGAN_x4plus_anime_6B.pt')
+    parser.add_argument('--colorizer_path', default=default_colorizer_path)
+    parser.add_argument('--extractor_path', default=default_extractor_path)
+    parser.add_argument('--upscaler_path', default=default_upscaler_path)
     parser.add_argument('--upscaler_type', choices=['ESRGAN', 'GigaGAN'], default='ESRGAN')
 
-    parser.add_argument('--no-ssl', dest='ssl', action='store_false', default=True, help='Disable SSL context.')
+    parser.add_argument('--no-ssl', dest='ssl', action='store_false', default=default_ssl_enabled, help='Disable SSL context.')
     parser.add_argument('--no-upscale', dest='upscale', action='store_false', default=True, help='Disable upscaling')
     parser.add_argument('--no-colorize', dest='colorize', action='store_false', default=True,
                         help='Disable colorization')
