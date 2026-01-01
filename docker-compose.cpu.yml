@@ -2,10 +2,7 @@ version: '3.8'
 
 services:
   manga-colorizer:
-    # Replace with your actual GitHub Container Registry image
-    # Format: ghcr.io/<username>/<repository>:cpu
-    # Example: ghcr.io/yourname/manga-colorizer:cpu
-    image: ghcr.io/yourname/manga-colorizer:cpu
+    image: ghcr.io/roncarlos/manga-colorizer:cpu
     
     container_name: manga-colorizer-backend-cpu
     
