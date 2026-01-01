@@ -1,0 +1,43 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Input/Output directories (should be volume mounted)
+input/
+output/
+manga/
+
+# SSL certificates (should be volume mounted)
+ssl/
+
+# Git
+.git/
+.gitignore
+
+# Model weights that should be volume mounted
+networks/generator.zip
+networks/*.zip
+
+# Docker
+.dockerignore
+Dockerfile
+
+# Misc
+*.log
+.DS_Store
+Thumbs.db
