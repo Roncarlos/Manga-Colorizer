@@ -1,8 +1,12 @@
 services:
-  manga-colorizer:
-    image: ghcr.io/roncarlos/manga-colorizer:gpu
+  manga-colorizer-dev-gpu:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      args:
+        BUILD_TYPE: gpu
     
-    container_name: manga-colorizer-backend-gpu
+    container_name: manga-colorizer-dev-gpu
     
     # NVIDIA Container Runtime
     runtime: nvidia
@@ -19,38 +23,35 @@ services:
       - UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
       - EXTRACTOR_PATH=networks/extractor.pth
       
-      # SSL configuration
+      # SSL configuration (disabled for local dev)
       - SSL_ENABLED=false
+      
+      # Python unbuffered output for better logging
+      - PYTHONUNBUFFERED=1
       
       # NVIDIA specific
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      
-      # Optional: Uncomment to disable specific features
-      # - NO_UPSCALE=true
-      # - NO_COLORIZE=true
-      # - NO_DENOISE=true
     
     volumes:
-      # Mount the networks directory containing model weights
-      # IMPORTANT: Download generator.zip before running!
-      - ./Backend/networks:/app/networks:ro
-      
-      # Mount denoising models
-      - ./Backend/denoising/models:/app/denoising/models:ro
+      # Mount source code for live development
+      # Changes to Python files will be reflected without rebuild
+      - ./Backend:/app
       
       # Mount cache directory for processed images (persistent)
-      - manga-cache:/app/manga
+      - manga-cache-dev-gpu:/app/manga
       
-      # Optional: Mount SSL certificates if needed
-      # - ./Backend/ssl:/app/ssl:ro
-      
-      # Optional: Mount input/output directories for batch processing
-      # - ./Backend/input:/app/input
-      # - ./Backend/output:/app/output
+      # Optional: Override input/output directories
+      # - ./dev-input:/app/input
+      # - ./dev-output:/app/output
     
+    # Auto-restart on failure
     restart: unless-stopped
     
+    # Development command with auto-reload
+    command: python app-stream.py --device cuda --no-ssl
+    
+    # GPU resource allocation
     deploy:
       resources:
         reservations:
@@ -59,13 +60,14 @@ services:
               count: 1
               capabilities: [gpu]
     
+    # Healthcheck with shorter intervals for dev
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000')"]
-      interval: 30s
-      timeout: 10s
+      interval: 15s
+      timeout: 5s
       retries: 3
-      start_period: 60s
+      start_period: 30s
 
 volumes:
-  manga-cache:
+  manga-cache-dev-gpu:
     driver: local
