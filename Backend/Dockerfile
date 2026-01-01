@@ -27,29 +27,32 @@ RUN pip install --no-cache-dir --user \
 # ============================================================================
 # Stage 2: GPU Builder
 # ============================================================================
-FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 AS builder-gpu
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04 AS builder-gpu
 
 WORKDIR /build
 
-# Install Python 3.12 (default in Ubuntu 24.04) and build dependencies
+# Install Python 3.10 (default in Ubuntu 22.04) and build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.12 \
-    python3.12-dev \
+    python3.10 \
+    python3.10-dev \
     python3-pip \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Create symbolic links for python
-RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
-    ln -sf /usr/bin/python3.12 /usr/bin/python3
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
+    ln -sf /usr/bin/python3.10 /usr/bin/python3
 
-# Copy requirements (pip 24.0 from Ubuntu is sufficient)
+# Upgrade pip to latest version
+RUN pip install --upgrade pip
+
+# Copy requirements
 COPY requirements.txt .
 
 # Install Python dependencies with CUDA-enabled PyTorch
-# Using cu121 wheels which are forward compatible with CUDA 13.x
+# Using cu118 wheels for CUDA 11.8 compatibility
 RUN pip install --no-cache-dir --break-system-packages --user \
-    torch torchvision --index-url https://download.pytorch.org/whl/cu121 && \
+    torch torchvision --index-url https://download.pytorch.org/whl/cu118 && \
     pip install --no-cache-dir --break-system-packages --user -r requirements.txt
 
 # ============================================================================
@@ -61,6 +64,7 @@ WORKDIR /app
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     libgomp1 \
     libglib2.0-0 \
     libsm6 \
@@ -94,7 +98,7 @@ EXPOSE 5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000')" || exit 1
+    CMD curl -f http://localhost:5000 || exit 1
 
 # Run the application
 CMD ["python", "app-stream.py"]
@@ -102,14 +106,15 @@ CMD ["python", "app-stream.py"]
 # ============================================================================
 # Stage 4: GPU Runtime
 # ============================================================================
-FROM nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04 AS runtime-gpu
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04 AS runtime-gpu
 
 WORKDIR /app
 
-# Install Python 3.12 (default in Ubuntu 24.04) and runtime dependencies
+# Install Python 3.10 (default in Ubuntu 22.04) and runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.12 \
+    python3.10 \
     python3-pip \
+    curl \
     libgomp1 \
     libglib2.0-0 \
     libsm6 \
@@ -119,8 +124,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Create symbolic links for python
-RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
-    ln -sf /usr/bin/python3.12 /usr/bin/python3
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python && \
+    ln -sf /usr/bin/python3.10 /usr/bin/python3
 
 # Copy Python packages from builder
 COPY --from=builder-gpu /root/.local /root/.local
@@ -147,7 +152,7 @@ EXPOSE 5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000')" || exit 1
+    CMD curl -f http://localhost:5000 || exit 1
 
 # Run the application
 CMD ["python", "app-stream.py"]

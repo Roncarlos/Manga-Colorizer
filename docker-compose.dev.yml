@@ -59,7 +59,7 @@ services:
     
     # Healthcheck with shorter intervals for dev
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000')"]
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
       interval: 15s
       timeout: 5s
       retries: 3
