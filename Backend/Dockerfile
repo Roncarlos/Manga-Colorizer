@@ -43,17 +43,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
     ln -sf /usr/bin/python3.12 /usr/bin/python3
 
-# Upgrade pip
-RUN python -m pip install --no-cache-dir --upgrade pip
+# Upgrade pip (using --break-system-packages for Python 3.12 in container)
+RUN python -m pip install --no-cache-dir --break-system-packages --upgrade pip
 
 # Copy requirements
 COPY requirements.txt .
 
 # Install Python dependencies with CUDA-enabled PyTorch
 # Using cu121 wheels which are forward compatible with CUDA 13.x
-RUN pip install --no-cache-dir --user \
+RUN pip install --no-cache-dir --break-system-packages --user \
     torch torchvision --index-url https://download.pytorch.org/whl/cu121 && \
-    pip install --no-cache-dir --user -r requirements.txt
+    pip install --no-cache-dir --break-system-packages --user -r requirements.txt
 
 # ============================================================================
 # Stage 3: CPU Runtime
