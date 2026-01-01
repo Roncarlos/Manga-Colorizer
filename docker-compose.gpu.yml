@@ -16,8 +16,8 @@ services:
       
       # Model paths (relative to /app in container)
       - COLORIZER_PATH=networks/generator.zip
-      - UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
-      - EXTRACTOR_PATH=networks/extractor.pth
+      #- UPSCALER_PATH=networks/RealESRGAN_x4plus_anime_6B.pt
+      #- EXTRACTOR_PATH=networks/extractor.pth
       
       # SSL configuration
       - SSL_ENABLED=false
@@ -37,7 +37,7 @@ services:
       - ./Backend/networks:/app/networks:ro
       
       # Mount denoising models
-      - ./Backend/denoising/models:/app/denoising/models:ro
+      #- ./Backend/denoising/models:/app/denoising/models:ro
       
       # Mount cache directory for processed images (persistent)
       - manga-cache:/app/manga

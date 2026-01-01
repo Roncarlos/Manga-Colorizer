@@ -22,19 +22,7 @@ The other required models are already included in the repository:
 - ✅ `Backend/networks/RealESRGAN_x4plus_anime_6B.pt` (upscaler)
 - ✅ `Backend/denoising/models/net_rgb.pth` (denoiser)
 
-### 2. Update Docker Compose Image
-
-Edit `docker-compose.yml` and replace the placeholder image name with your actual image:
-
-```yaml
-# Replace this:
-image: ghcr.io/yourname/manga-colorizer:latest
-
-# With your actual image (after GitHub Actions builds it):
-image: ghcr.io/<your-username>/<your-repo>:latest
-```
-
-### 3. Run with Docker Compose
+### 2. Run with Docker Compose
 
 **For CPU:**
 
@@ -57,7 +45,7 @@ docker-compose up -d
 docker-compose up -d
 ```
 
-### 4. Verify It's Running
+### 3. Verify It's Running
 
 ```bash
 # Check logs
