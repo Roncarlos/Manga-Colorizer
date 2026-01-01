@@ -1,0 +1,148 @@
+name: Build Browser Extensions
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'Frontend-Chrome/**'
+      - 'Frontend-Firefox/**'
+      - '.github/workflows/build-extensions.yml'
+  pull_request:
+    branches:
+      - main
+      - master
+    paths:
+      - 'Frontend-Chrome/**'
+      - 'Frontend-Firefox/**'
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build-chrome:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' Frontend-Chrome/manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Chrome Extension Version: $VERSION"
+
+      - name: Validate manifest.json
+        run: |
+          echo "Validating Chrome manifest.json..."
+          jq empty Frontend-Chrome/manifest.json
+
+      - name: Create Chrome extension package
+        run: |
+          cd Frontend-Chrome
+          zip -r ../manga-colorizer-chrome-v${{ steps.version.outputs.version }}.zip \
+            manifest.json \
+            background.js \
+            contentScript.js \
+            popup.html \
+            popup.css \
+            popup.js \
+            siteConfig.json \
+            README.md \
+            assets/
+          cd ..
+          echo "Chrome extension packaged successfully"
+
+      - name: Upload Chrome extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: manga-colorizer-chrome-v${{ steps.version.outputs.version }}
+          path: manga-colorizer-chrome-v${{ steps.version.outputs.version }}.zip
+          retention-days: 90
+
+      - name: Upload to release (if release event)
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./manga-colorizer-chrome-v${{ steps.version.outputs.version }}.zip
+          asset_name: manga-colorizer-chrome-v${{ steps.version.outputs.version }}.zip
+          asset_content_type: application/zip
+
+  build-firefox:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from manifest
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' Frontend-Firefox/manifest.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Firefox Extension Version: $VERSION"
+
+      - name: Validate manifest.json
+        run: |
+          echo "Validating Firefox manifest.json..."
+          jq empty Frontend-Firefox/manifest.json
+
+      - name: Create Firefox extension package
+        run: |
+          cd Frontend-Firefox
+          zip -r ../manga-colorizer-firefox-v${{ steps.version.outputs.version }}.zip \
+            manifest.json \
+            background.js \
+            contentScript.js \
+            popup.html \
+            popup.css \
+            popup.js \
+            siteConfig.json \
+            README.md \
+            assets/
+          cd ..
+          echo "Firefox extension packaged successfully"
+
+      - name: Upload Firefox extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: manga-colorizer-firefox-v${{ steps.version.outputs.version }}
+          path: manga-colorizer-firefox-v${{ steps.version.outputs.version }}.zip
+          retention-days: 90
+
+      - name: Upload to release (if release event)
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./manga-colorizer-firefox-v${{ steps.version.outputs.version }}.zip
+          asset_name: manga-colorizer-firefox-v${{ steps.version.outputs.version }}.zip
+          asset_content_type: application/zip
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [build-chrome, build-firefox]
+    if: always()
+    
+    steps:
+      - name: Build Summary
+        run: |
+          echo "## Browser Extensions Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Chrome extension built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Firefox extension built successfully" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Artifacts are available in the Actions tab for 90 days." >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event_name }}" == "release" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📦 Extensions have been uploaded to the release." >> $GITHUB_STEP_SUMMARY
+          fi
