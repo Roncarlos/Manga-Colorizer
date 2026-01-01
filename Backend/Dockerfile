@@ -43,10 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -sf /usr/bin/python3.12 /usr/bin/python && \
     ln -sf /usr/bin/python3.12 /usr/bin/python3
 
-# Upgrade pip (using --break-system-packages for Python 3.12 in container)
-RUN python -m pip install --no-cache-dir --break-system-packages --upgrade pip
-
-# Copy requirements
+# Copy requirements (pip 24.0 from Ubuntu is sufficient)
 COPY requirements.txt .
 
 # Install Python dependencies with CUDA-enabled PyTorch
