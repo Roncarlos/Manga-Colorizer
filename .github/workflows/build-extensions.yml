@@ -6,16 +6,16 @@ on:
       - main
       - master
     paths:
-      - 'Frontend-Chrome/**'
-      - 'Frontend-Firefox/**'
-      - '.github/workflows/build-extensions.yml'
+      - "Frontend-Chrome/**"
+      - "Frontend-Firefox/**"
+      - ".github/workflows/build-extensions.yml"
   pull_request:
     branches:
       - main
       - master
     paths:
-      - 'Frontend-Chrome/**'
-      - 'Frontend-Firefox/**'
+      - "Frontend-Chrome/**"
+      - "Frontend-Firefox/**"
   release:
     types: [created]
   workflow_dispatch:
@@ -23,7 +23,7 @@ on:
 jobs:
   build-chrome:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -76,7 +76,7 @@ jobs:
 
   build-firefox:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-chrome, build-firefox]
     if: always()
-    
+
     steps:
       - name: Build Summary
         run: |
@@ -141,7 +141,7 @@ jobs:
           echo "✅ Firefox extension built successfully" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Artifacts are available in the Actions tab for 90 days." >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ github.event_name }}" == "release" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "📦 Extensions have been uploaded to the release." >> $GITHUB_STEP_SUMMARY
