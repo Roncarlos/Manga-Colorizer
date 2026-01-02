@@ -29,7 +29,47 @@ const addSiteButton = document.getElementById("addsite");
 const runButton = document.getElementById("run");
 const testApiButton = document.getElementById("test-api");
 const forceRunButton = document.getElementById("force-run");
+// Function to load available tones from the API
+function loadAvailableTones(apiURL) {
+  if (!apiURL) return;
 
+  fetch(`${apiURL}/tones`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.tones && Array.isArray(data.tones)) {
+        const currentValue = toneSelector.value;
+
+        // Clear existing options except custom
+        toneSelector.innerHTML = "";
+
+        // Add all tones from API
+        data.tones.forEach((tone) => {
+          const option = document.createElement("option");
+          option.value = tone;
+          option.textContent = tone.charAt(0).toUpperCase() + tone.slice(1);
+          toneSelector.appendChild(option);
+        });
+
+        // Always add 'custom' option at the end
+        const customOption = document.createElement("option");
+        customOption.value = "custom";
+        customOption.textContent = "Custom Image";
+        toneSelector.appendChild(customOption);
+
+        // Restore previous selection if it still exists
+        if (
+          [...toneSelector.options].some((opt) => opt.value === currentValue)
+        ) {
+          toneSelector.value = currentValue;
+        } else {
+          toneSelector.value = "neutral";
+        }
+      }
+    })
+    .catch((error) => {
+      console.log("[MC] Failed to load tones from API:", error);
+    });
+}
 browser.storage.local.get(
   [
     "apiURL",
@@ -70,6 +110,12 @@ browser.storage.local.get(
     } else {
       upscaleFactorSelector4.checked = true;
     }
+
+    // Load available tones from API
+    if (result.apiURL) {
+      loadAvailableTones(result.apiURL);
+    }
+
     toneSelector.value = result.tone || "neutral";
     referenceImageUrlInput.value = result.referenceImageURL || "";
     brightnessSlider.value = result.brightness || "1.0";

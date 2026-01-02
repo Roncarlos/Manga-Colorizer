@@ -31,6 +31,17 @@ def index():
     return 'Manga Colorizer is Up and Running!'
 
 
+@app.route('/tones', methods=['GET'])
+def get_tones():
+    """Return list of available tone themes."""
+    try:
+        themes = ToneAdjuster.get_available_themes()
+        return jsonify({'tones': themes})
+    except Exception as e:
+        print(f'[-] Error getting available tones: {e}')
+        return jsonify({'tones': ['neutral'], 'error': str(e)})
+
+
 @app.route('/colorize-image-data', methods=['POST'])
 def colorize_image_data():
     rid = generate_random_id()

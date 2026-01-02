@@ -39,6 +39,9 @@ services:
       # Mount denoising models
       #- ./Backend/denoising/models:/app/denoising/models:ro
       
+      # Mount tones directory for custom color tone references
+      - ./Backend/tones:/app/tones
+      
       # Mount cache directory for processed images (persistent)
       - manga-cache:/app/manga
       

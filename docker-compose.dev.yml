@@ -34,6 +34,8 @@ services:
       # Changes to Python files will be reflected without rebuild
       - ./Backend:/app
       
+      # Tones directory is already mounted via ./Backend:/app mount above
+      
       # Mount cache directory for processed images (persistent)
       - manga-cache-dev:/app/manga
       

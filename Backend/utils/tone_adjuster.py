@@ -7,18 +7,48 @@ from pathlib import Path
 class ToneAdjuster:
     """Applies tone adjustments to colorized images using color transfer in LAB color space."""
     
-    # Reference image directory
-    REFERENCE_DIR = Path(__file__).parent.parent / 'tone_references'
-    
-    THEMES = ['neutral', 'bright', 'dark', 'warm', 'cool', 'vibrant', 'pastel']
+    # Reference image directory (configurable via environment variable)
+    REFERENCE_DIR = Path(os.getenv('TONES_DIR', Path(__file__).parent.parent / 'tones'))
     
     # Cache for loaded reference images
     _reference_cache = {}
     
+    # Cache for discovered themes
+    _themes_cache = None
+    _themes_cache_time = 0
+    CACHE_TTL = 60  # Re-scan directory every 60 seconds
+    
     @staticmethod
     def get_available_themes():
-        """Returns list of available theme names."""
-        return ToneAdjuster.THEMES.copy()
+        """Returns list of available theme names by scanning the tones directory."""
+        import time
+        
+        # Check if cache is still valid
+        current_time = time.time()
+        if (ToneAdjuster._themes_cache is not None and 
+            current_time - ToneAdjuster._themes_cache_time < ToneAdjuster.CACHE_TTL):
+            return ToneAdjuster._themes_cache.copy()
+        
+        # Always include 'neutral' (no adjustment)
+        themes = ['neutral']
+        
+        # Scan directory for image files
+        if ToneAdjuster.REFERENCE_DIR.exists():
+            supported_extensions = {'.jpg', '.jpeg', '.png', '.bmp'}
+            for file_path in ToneAdjuster.REFERENCE_DIR.iterdir():
+                if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
+                    theme_name = file_path.stem
+                    if theme_name not in themes:
+                        themes.append(theme_name)
+        
+        # Sort themes alphabetically (except neutral first)
+        themes = ['neutral'] + sorted([t for t in themes if t != 'neutral'])
+        
+        # Update cache
+        ToneAdjuster._themes_cache = themes
+        ToneAdjuster._themes_cache_time = current_time
+        
+        return themes.copy()
     
     @staticmethod
     def _load_reference_image(theme):
@@ -107,13 +137,14 @@ class ToneAdjuster:
         
         Args:
             image: numpy array (H, W, 3) in RGB format with values 0-255
-            theme: str, one of 'neutral', 'bright', 'dark', 'warm', 'cool', 'vibrant', 'pastel'
+            theme: str, theme name corresponding to an image file in the tones directory
             
         Returns:
             numpy array with adjusted tones in RGB format
         """
-        if theme not in ToneAdjuster.THEMES:
-            print(f"[-] Unknown theme '{theme}', using 'neutral'")
+        available_themes = ToneAdjuster.get_available_themes()
+        if theme not in available_themes:
+            print(f"[-] Unknown theme '{theme}', using 'neutral'. Available: {available_themes}")
             theme = 'neutral'
         
         # No adjustment for neutral
