@@ -102,6 +102,7 @@ See [example_training_data/](example_training_data/) for a template.
 ## Support
 
 For issues or questions:
+
 - Check [TRAINING.md](TRAINING.md) troubleshooting section
 - Run `python validate_dataset.py` to check your data
 - Review `training.log` for error details
