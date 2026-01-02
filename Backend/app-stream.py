@@ -48,6 +48,7 @@ def colorize_image_data():
         denoise_sigma = req_json.get('denoiseSigma', config.denoise_sigma)
         upscale_factor = req_json.get('upscaleFactor', config.upscale_factor)
         tone = req_json.get('tone', 'neutral')
+        reference_image_url = req_json.get('referenceImageURL', '')
         cache = req_json.get('cache', False)
         manga_title = req_json.get('mangaTitle', '')
         manga_chapter = req_json.get('mangaChapter', '')
@@ -108,9 +109,21 @@ def colorize_image_data():
             print(f'[*] [{rid}] Upscaling image...')
             image = upscale_image(rid, image, upscaler, upscale_factor)
 
-        if tone and tone != 'neutral':
-            print(f'[*] [{rid}] Applying tone adjustment: {tone}...')
-            image = apply_tone(rid, image, tone)
+        reference_image = None
+        if reference_image_url:
+            try:
+                print(f'[*] [{rid}] Loading reference image from: {reference_image_url}')
+                ref_image_binary = retrieve_image_binary(rid, request, reference_image_url)
+                ref_imgio = io.BytesIO(ref_image_binary)
+                reference_image = PIL.Image.open(ref_imgio).convert('RGB')
+                reference_image = np.array(reference_image)
+                print(f'[+] [{rid}] Reference image loaded: {reference_image.shape}')
+            except Exception as e:
+                print(f'[-] [{rid}] Failed to load reference image: {e}')
+
+        if reference_image is not None or (tone and tone != 'neutral'):
+            print(f'[*] [{rid}] Applying tone adjustment...')
+            image = apply_tone(rid, image, tone, reference_image)
 
         if cache:
             try:
@@ -227,11 +240,14 @@ def upscale_image(rid, image, upscaler, factor):
     return upscaled_image
 
 
-def apply_tone(rid, image, tone):
+def apply_tone(rid, image, tone, reference_image=None):
     start_time = time.time()
-    adjusted_image = ToneAdjuster.adjust_tone(image, tone)
-    elapsed_time = time.time() - start_time
-    print(f'[+] [{rid}] Applied tone adjustment ({tone}) in {elapsed_time:.2f} seconds.')
+    if reference_image is not None:
+        adjusted_image = ToneAdjuster.apply_reference_tone(image, reference_image)
+        print(f'[+] [{rid}] Applied reference image tone in {time.time() - start_time:.2f} seconds.')
+    else:
+        adjusted_image = ToneAdjuster.adjust_tone(image, tone)
+        print(f'[+] [{rid}] Applied tone adjustment ({tone}) in {time.time() - start_time:.2f} seconds.')
     return adjusted_image
 
 

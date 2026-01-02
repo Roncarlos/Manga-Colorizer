@@ -143,3 +143,34 @@ class ToneAdjuster:
         result_rgb = cv2.cvtColor(result_bgr, cv2.COLOR_BGR2RGB)
         
         return result_rgb
+    
+    @staticmethod
+    def apply_reference_tone(image, reference_image):
+        """
+        Apply tone adjustment using a custom reference image.
+        
+        Args:
+            image: numpy array (H, W, 3) in RGB format with values 0-255
+            reference_image: numpy array (H, W, 3) in RGB format to extract color tone from
+            
+        Returns:
+            numpy array with adjusted tones in RGB format
+        """
+        # Convert both images from RGB to LAB via BGR
+        image_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        source_lab = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2LAB)
+        
+        reference_bgr = cv2.cvtColor(reference_image, cv2.COLOR_RGB2BGR)
+        reference_lab = cv2.cvtColor(reference_bgr, cv2.COLOR_BGR2LAB)
+        
+        # Calculate target statistics from reference image
+        target_mean, target_std = ToneAdjuster._get_mean_and_std(reference_lab)
+        
+        # Apply color transfer
+        result_lab = ToneAdjuster._color_transfer_lab(source_lab, target_mean, target_std)
+        
+        # Convert back to RGB
+        result_bgr = cv2.cvtColor(result_lab, cv2.COLOR_LAB2BGR)
+        result_rgb = cv2.cvtColor(result_bgr, cv2.COLOR_BGR2RGB)
+        
+        return result_rgb

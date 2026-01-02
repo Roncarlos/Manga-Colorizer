@@ -54,7 +54,16 @@
         <option value="cool">Cool</option>
         <option value="vibrant">Vibrant</option>
         <option value="pastel">Pastel</option>
+        <option value="custom">Custom Image</option>
       </select>
+    </div>
+    <div class="settings-container" id="reference-image-container" style="display: none;">
+      <label class="setting-label" for="reference-image-url-field">Tone Reference Image</label>
+      <input class="text-input" type="text" id="reference-image-url-field" placeholder="https://example.com/image.jpg" title="URL to a reference image for custom color tone"/>
+    </div>
+    <div class="settings-container">
+      <label class="setting-label" for="brightness-slider">Brightness: <span id="brightness-value">1.0</span></label>
+      <input type="range" id="brightness-slider" min="0" max="3" step="0.1" value="1.0" title="Adjust image brightness (CSS filter)">
     </div>
     <div class="settings-container" style="display:none">
       <label class="setting-label">Upscale factor</label>
