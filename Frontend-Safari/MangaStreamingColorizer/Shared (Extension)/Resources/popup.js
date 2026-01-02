@@ -1,15 +1,17 @@
 const urlInput = document.getElementById("url-input-field");
 const colTolInput = document.getElementById("coltol-input-field");
 const colStrideInput = document.getElementById("colstride-input-field");
+const toneSelector = document.getElementById("tone-selector");
 const websitesInput = document.getElementById("websites-input-field");
 const addSiteButton = document.getElementById("addsite");
 const runButton = document.getElementById("run");
 const testApiButton = document.getElementById("test-api");
 
-chrome.storage.local.get(["apiURL", "colTol", "colStride", "websites"], (result) => {
+chrome.storage.local.get(["apiURL", "colTol", "colStride", "tone", "websites"], (result) => {
     urlInput.value = result.apiURL || "";
     colTolInput.value = result.colTol || "30";
     colStrideInput.value = result.colStride || "4";
+    toneSelector.value = result.tone || "neutral";
     websitesInput.value = result.websites || "mangadex.org/chapter\nchapmanganelo.com\nfanfox.net";
     const sitesArray = websitesInput.value.split("\n");
     websitesInput.rows = sitesArray.length + 1
@@ -45,6 +47,7 @@ runButton.addEventListener("click",() => {
         apiURL: urlInput.value.trim(),
         colTol: colTolInput.value.trim(),
         colStride: colStrideInput.value.trim(),
+        tone: toneSelector.value,
         websites: websitesInput.value.trim(),
         currentTab: true,
     }); 

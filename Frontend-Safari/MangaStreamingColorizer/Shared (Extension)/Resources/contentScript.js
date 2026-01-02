@@ -7,6 +7,7 @@ if (window.injectedMC !== 1) {
     var activeFetches = 0;
     var maxActiveFetches = 1;
     var maxImgWidth = 992;
+    var tone = 'neutral';  // Tone adjustment theme
 
     var colTol = 30;  // If difference between red, blue, and green values is greater than this for any pixel,
                       // image is assumed to be in color and will not be recolored.
@@ -104,7 +105,8 @@ if (window.injectedMC !== 1) {
             img.coloredsrc = img.src.slice(0, maxColoredSrc); // assume already colored while fetch is in progress
             const postData = {
                 imgName: imgName,
-                imgWidth: Math.min(img.width, maxImgWidth)
+                imgWidth: Math.min(img.width, maxImgWidth),
+                tone: tone
             }
             if (canSendData)
                 postData.imgData = imgContext.canvas.toDataURL("image/png");
@@ -145,15 +147,17 @@ if (window.injectedMC !== 1) {
     const colorizeMangaEventHandler = (event=null) => {
         // if (event) console.log('MC: colorizeMangaEventHandler called with event', event);
         try {
-            chrome.storage.local.get(["apiURL", "colTol", "colorStride", "minImgHeight", "minImgHeight"], (result) => {
+            chrome.storage.local.get(["apiURL", "colTol", "colorStride", "tone", "minImgHeight", "minImgHeight"], (result) => {
                 const apiURL = result.apiURL;
                 if (apiURL) {
                     const storedColTol = result.colTol;
                     const storedColorStride = result.colorStride;
+                    const storedTone = result.tone;
                     const minImgHeight = Math.min(result.minImgHeight || 200, window.innerHeight/2);
                     const minImgWidth = Math.min(result.minImgWidth || 400, window.innerWidth/2);                
                     if (storedColTol > -1) colTol = storedColTol;
                     if (storedColorStride > -1) colorStride = storedColorStride;
+                    if (storedTone) tone = storedTone;
                     console.log('MC: Scanning images...')
                     for (let img of document.querySelectorAll('img')) {
                         if (imgSrcMatchesColoredSrc(img)) continue;

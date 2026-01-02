@@ -9,6 +9,7 @@ const upscaleCheckbox = document.getElementById("upscaler-checkbox");
 const upscaleFactorSelector = document.querySelectorAll("input[name='upscale-factor']");
 const upscaleFactorSelector2 = document.getElementById("upscale-factor-2");
 const upscaleFactorSelector4 = document.getElementById("upscale-factor-4");
+const toneSelector = document.getElementById("tone-selector");
 const denoiseSigmaInput = document.getElementById("denoisesigma-input-field");
 const colorToleranceInput = document.getElementById("colortolerance-input-field");
 const colorStrideInput = document.getElementById("colorstride-input-field");
@@ -19,7 +20,7 @@ const testApiButton = document.getElementById("test-api");
 const forceRunButton = document.getElementById("force-run");
 
 browser.storage.local.get(["apiURL", "maxActiveFetches", "showOriginal", "showColorized", "cache", "denoise",
-                "colorize", "upscale", "denoiseSigma", "upscaleFactor",
+                "colorize", "upscale", "denoiseSigma", "upscaleFactor", "tone",
                 "colorTolerance", "colorStride", "websites"], (result) => {
     urlInput.value = result.apiURL || "";
     maxActiveFetches.value = result.maxActiveFetches || "1";
@@ -36,6 +37,7 @@ browser.storage.local.get(["apiURL", "maxActiveFetches", "showOriginal", "showCo
     } else {
         upscaleFactorSelector4.checked = true;
     }
+    toneSelector.value = result.tone || "neutral";
     denoiseSigmaInput.value = result.denoiseSigma || "25";
     colorToleranceInput.value = result.colorTolerance || "30";
     colorStrideInput.value = result.colorStride || "4";
@@ -106,6 +108,7 @@ runButton.addEventListener("click",() => {
         colorize: colorizeCheckbox.checked,
         upscale: upscaleCheckbox.checked,
         upscaleFactor: selectedUpscaleFactor,
+        tone: toneSelector.value,
         denoiseSigma: denoiseSigmaInput.value.trim(),
         colorTolerance: colorToleranceInput.value.trim(),
         colorStride: colorStrideInput.value.trim(),

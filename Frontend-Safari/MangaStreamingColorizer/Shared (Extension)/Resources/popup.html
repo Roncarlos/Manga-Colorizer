@@ -19,6 +19,18 @@
       <input class="text-input" type="number" min="0" max="255" id="coltol-input-field" title="Images with colors farther from gray than this will not be recolored"/>
     </div>
     <div class="settings-container">
+      <label class="setting-label" for="tone-selector">Tone</label>
+      <select class="text-input" id="tone-selector">
+        <option value="neutral">Neutral</option>
+        <option value="bright">Bright</option>
+        <option value="dark">Dark</option>
+        <option value="warm">Warm</option>
+        <option value="cool">Cool</option>
+        <option value="vibrant">Vibrant</option>
+        <option value="pastel">Pastel</option>
+      </select>
+    </div>
+    <div class="settings-container">
       <label class="setting-label" for="colstride-input-field">Color Stride</label>
       <input class="text-input" type="number" min="0" max="255" id="colstride-input-field" title="Skip this many pixels at edges and between pixels when checking for color" />
     </div>

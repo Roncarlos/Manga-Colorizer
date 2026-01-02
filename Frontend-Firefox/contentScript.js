@@ -19,6 +19,7 @@ if (window.injectedMC !== 1) {
     var upscale = true  // Upscale the image using super-resolution
     var upscaleFactor = 4  // Image upscale factor x2 or x4
     var denoiseSigma = 25  // Expected noise in image, basically blur strength
+    var tone = 'neutral'  // Tone adjustment theme: neutral, bright, dark, warm, cool, vibrant, pastel
 
     var showOriginal = false  // Shows original image, if processed (colorized)
     var showColorized = true  // Shows processed image, if processed (colorized)
@@ -270,6 +271,7 @@ if (window.injectedMC !== 1) {
 				upscale: upscale && !isAnimated,
 				denoiseSigma: Number(denoiseSigma),
 				upscaleFactor: Number(upscaleFactor),
+				tone: tone,
 
 				mangaTitle: mangaProps.title,
 				mangaChapter: mangaProps.chapter,
@@ -410,7 +412,7 @@ if (window.injectedMC !== 1) {
     // ---- Extension interface functions ----
     const colorizeMangaEventHandler = (event=null) => {
         try {
-            browser.storage.local.get(["apiURL", "maxActiveFetches", "showOriginal", "showColorized", "cache", "denoise", "colorize", "upscale", "denoiseSigma", "upscaleFactor",
+            browser.storage.local.get(["apiURL", "maxActiveFetches", "showOriginal", "showColorized", "cache", "denoise", "colorize", "upscale", "denoiseSigma", "upscaleFactor", "tone",
                 "colorTolerance", "colorStride", "minImgHeight", "minImgHeight"], (result) => {
                 apiURL = result.apiURL;
                 if (apiURL && siteConfigurations) {
@@ -424,6 +426,7 @@ if (window.injectedMC !== 1) {
                     upscale = result.upscale
                     denoiseSigma = result.denoiseSigma || "25"
                     upscaleFactor = result.upscaleFactor || "4"
+                    tone = result.tone || "neutral"
 
                     const storedColorTolerance = result.colorTolerance;
                     const storedColorStride = result.colorStride;

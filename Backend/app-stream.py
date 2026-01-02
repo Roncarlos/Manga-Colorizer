@@ -19,6 +19,7 @@ from colorizator import MangaColorizator
 from upscalator import MangaUpscaler
 from utils.utils import distance_from_grayscale, generate_random_id, \
     image_to_base64, load_image_as_base64, save_image, sanitize_string, clear_torch_cache
+from utils.tone_adjuster import ToneAdjuster
 
 
 app = Flask(__name__)
@@ -46,6 +47,7 @@ def colorize_image_data():
         denoise = req_json.get('denoise', config.denoise)
         denoise_sigma = req_json.get('denoiseSigma', config.denoise_sigma)
         upscale_factor = req_json.get('upscaleFactor', config.upscale_factor)
+        tone = req_json.get('tone', 'neutral')
         cache = req_json.get('cache', False)
         manga_title = req_json.get('mangaTitle', '')
         manga_chapter = req_json.get('mangaChapter', '')
@@ -71,7 +73,7 @@ def colorize_image_data():
                     return jsonify({'colorImgData': cached_image})
 
         print(f'[+] [{rid}] Requested image: {img_name}, Width: {img_width}, Height: {img_height}')
-        print(f'[+] [{rid}] Colorize: {colorize}, Upscale: {upscale}{f"(x{upscale_factor})" if upscale else ""}, Denoise: {denoise}')
+        print(f'[+] [{rid}] Colorize: {colorize}, Upscale: {upscale}{f"(x{upscale_factor})" if upscale else ""}, Denoise: {denoise}, Tone: {tone}')
 
         if img_data:
             img_metadata, img_data64 = img_data.split(',', 1)
@@ -105,6 +107,10 @@ def colorize_image_data():
         if upscale:
             print(f'[*] [{rid}] Upscaling image...')
             image = upscale_image(rid, image, upscaler, upscale_factor)
+
+        if tone and tone != 'neutral':
+            print(f'[*] [{rid}] Applying tone adjustment: {tone}...')
+            image = apply_tone(rid, image, tone)
 
         if cache:
             try:
@@ -219,6 +225,14 @@ def upscale_image(rid, image, upscaler, factor):
     elapsed_time = time.time() - start_time
     print(f'[+] [{rid}] Upscaled image (x{factor}) {[*image.shape]}->{[*upscaled_image.shape]} in {elapsed_time:.2f} seconds.')
     return upscaled_image
+
+
+def apply_tone(rid, image, tone):
+    start_time = time.time()
+    adjusted_image = ToneAdjuster.adjust_tone(image, tone)
+    elapsed_time = time.time() - start_time
+    print(f'[+] [{rid}] Applied tone adjustment ({tone}) in {elapsed_time:.2f} seconds.')
+    return adjusted_image
 
 
 config = None
