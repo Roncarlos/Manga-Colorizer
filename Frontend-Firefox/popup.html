@@ -11,83 +11,155 @@
   <div class="main-container">
     <div class="title">Manga Colorizer</div>
     <hr />
-    <div class="settings-container">
-      <label class="setting-label" for="url-input-field">API URL</label>
-      <input class="text-input" type="text" id="url-input-field" />
-      <button id="test-api">Test</button>
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="maxactivefetches-input-field">Parallel Processing</label>
-      <input class="text-input" type="number" min="0" max="10" id="maxactivefetches-input-field" title="Images to process parallely"/>
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="showoriginal-checkbox">Show Original</label>
-      <input class="checkbox-input" id="showoriginal-checkbox" type="checkbox" title="Save original images">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="showcolorized-checkbox">Show Colorized</label>
-      <input class="checkbox-input" id="showcolorized-checkbox" type="checkbox" title="Save colorized images">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="cache-checkbox">Use Cache</label>
-      <input class="checkbox-input" id="cache-checkbox" type="checkbox" title="Save images to server for caching">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="denoiser-checkbox">Use Denoiser</label>
-      <input class="checkbox-input" id="denoiser-checkbox" type="checkbox">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="colorizer-checkbox">Use Colorizer</label>
-      <input class="checkbox-input" id="colorizer-checkbox" type="checkbox">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="upscaler-checkbox">Use Upscaler</label>
-      <input class="checkbox-input" id="upscaler-checkbox" type="checkbox">
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="tone-selector">Tone</label>
-      <select class="text-input" id="tone-selector">
-        <option value="neutral">Neutral</option>
-        <option value="custom">Custom Image</option>
-      </select>
-    </div>
-    <div class="settings-container" id="reference-image-container" style="display: none;">
-      <label class="setting-label" for="reference-image-url-field">Tone Reference Image</label>
-      <input class="text-input" type="text" id="reference-image-url-field" placeholder="https://example.com/image.jpg" title="URL to a reference image for custom color tone"/>
-    </div>
-    <div class="settings-container">
-      <label class="setting-label" for="brightness-slider">Brightness: <span id="brightness-value">1.0</span></label>
-      <input type="range" id="brightness-slider" min="0" max="3" step="0.1" value="1.0" title="Adjust image brightness (CSS filter)">
-    </div>
-    <div class="settings-container" style="display:none">
-      <label class="setting-label">Upscale factor</label>
-      <div id="upscalefactor-selector">
-        <input class="radio-input" type="radio" id="upscale-factor-2" name="upscale-factor" value="2">
-        <label class="setting-label" for="upscale-factor-2">2</label>
-        <input class="radio-input" type="radio" id="upscale-factor-4" name="upscale-factor" value="4" checked>
-        <label class="setting-label" for="upscale-factor-4">4</label>
+    
+    <!-- Connection Category -->
+    <div class="category">
+      <div class="category-header" data-category="connection">
+        <span class="category-arrow">▼</span>
+        <span class="category-title">Connection</span>
+      </div>
+      <div class="category-content" data-category="connection">
+        <div class="settings-container">
+          <label class="setting-label" for="url-input-field">API URL</label>
+          <input class="text-input" type="text" id="url-input-field" />
+          <button id="test-api">Test</button>
+        </div>
       </div>
     </div>
-    <div class="settings-container">
-      <label class="setting-label" for="denoisesigma-input-field">Denoise Sigma</label>
-      <input class="text-input" type="number" min="0" max="1000" id="denoisesigma-input-field" title="Noise to expect from the images (Blur strength)"/>
+    
+    <!-- Processing Category -->
+    <div class="category">
+      <div class="category-header" data-category="processing">
+        <span class="category-arrow">▼</span>
+        <span class="category-title">Processing Options</span>
+      </div>
+      <div class="category-content" data-category="processing">
+        <div class="settings-container">
+          <label class="setting-label" for="maxactivefetches-input-field">Parallel Processing</label>
+      <input class="text-input" type="number" min="0" max="10" id="maxactivefetches-input-field" title="Images to process parallely"/>
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="showoriginal-checkbox">Show Original</label>
+          <input class="checkbox-input" id="showoriginal-checkbox" type="checkbox" title="Save original images">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="showcolorized-checkbox">Show Colorized</label>
+          <input class="checkbox-input" id="showcolorized-checkbox" type="checkbox" title="Save colorized images">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="cache-checkbox">Use Cache</label>
+          <input class="checkbox-input" id="cache-checkbox" type="checkbox" title="Save images to server for caching">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="denoiser-checkbox">Use Denoiser</label>
+          <input class="checkbox-input" id="denoiser-checkbox" type="checkbox">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="colorizer-checkbox">Use Colorizer</label>
+          <input class="checkbox-input" id="colorizer-checkbox" type="checkbox">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="upscaler-checkbox">Use Upscaler</label>
+          <input class="checkbox-input" id="upscaler-checkbox" type="checkbox">
+        </div>
+      </div>
     </div>
-    <div class="settings-container">
-      <label class="setting-label" for="colortolerance-input-field">Color Tolerance</label>
-      <input class="text-input" type="number" min="-1" max="1000" id="colortolerance-input-field" title="The MSE threshold for determining whether an image is considered grayscale or not"/>
+    
+    <!-- Colorization & Visual Filters Category -->
+    <div class="category">
+      <div class="category-header" data-category="colorization">
+        <span class="category-arrow">▼</span>
+        <span class="category-title">Colorization & Visual Filters</span>
+      </div>
+      <div class="category-content" data-category="colorization">
+        <div class="settings-container">
+          <label class="setting-label" for="tone-selector">Tone</label>
+          <select class="text-input" id="tone-selector">
+            <option value="neutral">Neutral</option>
+            <option value="custom">Custom Image</option>
+          </select>
+        </div>
+        <div class="settings-container" id="reference-image-container" style="display: none;">
+          <label class="setting-label" for="reference-image-url-field">Tone Reference Image</label>
+          <input class="text-input" type="text" id="reference-image-url-field" placeholder="https://example.com/image.jpg" title="URL to a reference image for custom color tone"/>
+        </div>
+        <hr />
+        <div class="settings-container">
+          <label class="setting-label" for="brightness-slider">Brightness: <span id="brightness-value">1.0</span></label>
+          <input type="range" id="brightness-slider" min="0" max="3" step="0.1" value="1.0" title="Adjust image brightness (CSS filter)">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="contrast-slider">Contrast: <span id="contrast-value">1.0</span></label>
+          <input type="range" id="contrast-slider" min="0" max="3" step="0.1" value="1.0" title="Adjust image contrast (CSS filter)">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="saturation-slider">Saturation: <span id="saturation-value">1.0</span></label>
+          <input type="range" id="saturation-slider" min="0" max="3" step="0.1" value="1.0" title="Adjust image saturation (CSS filter)">
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="hue-rotate-slider">Hue Rotate: <span id="hue-rotate-value">0</span>°</label>
+          <input type="range" id="hue-rotate-slider" min="0" max="360" step="1" value="0" title="Adjust image hue rotation (CSS filter)">
+        </div>
+        <hr />
+        <div class="settings-container">
+          <label class="setting-label" for="preset-selector">Filter Preset</label>
+          <select class="text-input" id="preset-selector">
+            <option value="">-- Select Preset --</option>
+          </select>
+        </div>
+        <div class="settings-container">
+          <button id="save-preset-btn" style="height: 30px; padding: 3px 8px;">Save Current</button>
+          <button id="delete-preset-btn" style="height: 30px; padding: 3px 8px;" disabled>Delete</button>
+          <button id="reset-filters-btn" style="height: 30px; padding: 3px 8px;">Reset Filters</button>
+        </div>
+        <div class="settings-container" id="preset-name-container" style="display: none;">
+          <input class="text-input" type="text" id="preset-name-input" placeholder="Preset name..." maxlength="30" />
+          <button id="confirm-save-preset-btn" style="height: 30px; padding: 3px 8px;">Confirm</button>
+          <button id="cancel-save-preset-btn" style="height: 30px; padding: 3px 8px;">Cancel</button>
+        </div>
+      </div>
     </div>
-    <div class="settings-container" style="display:none">
-      <label class="setting-label" for="colorstride-input-field">Color Stride</label>
-      <input class="text-input" type="number" min="0" max="255" id="colorstride-input-field" title="Skip this many
-        pixels at edges and between pixels when checking for color" />
+    
+    <!-- Advanced Category -->
+    <div class="category">
+      <div class="category-header" data-category="advanced">
+        <span class="category-arrow">▼</span>
+        <span class="category-title">Advanced Settings</span>
+      </div>
+      <div class="category-content" data-category="advanced">
+        <div class="settings-container" style="display:none">
+          <label class="setting-label">Upscale factor</label>
+          <div id="upscalefactor-selector">
+            <input class="radio-input" type="radio" id="upscale-factor-2" name="upscale-factor" value="2">
+            <label class="setting-label" for="upscale-factor-2">2</label>
+            <input class="radio-input" type="radio" id="upscale-factor-4" name="upscale-factor" value="4" checked>
+            <label class="setting-label" for="upscale-factor-4">4</label>
+          </div>
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="denoisesigma-input-field">Denoise Sigma</label>
+          <input class="text-input" type="number" min="0" max="1000" id="denoisesigma-input-field" title="Noise to expect from the images (Blur strength)"/>
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="colortolerance-input-field">Color Tolerance</label>
+          <input class="text-input" type="number" min="-1" max="1000" id="colortolerance-input-field" title="The MSE threshold for determining whether an image is considered grayscale or not"/>
+        </div>
+        <div class="settings-container" style="display:none">
+          <label class="setting-label" for="colorstride-input-field">Color Stride</label>
+          <input class="text-input" type="number" min="0" max="255" id="colorstride-input-field" title="Skip this many
+            pixels at edges and between pixels when checking for color" />
+        </div>
+        <div class="settings-container">
+          <label class="setting-label" for="websites-input-field">Manga Sites</label>
+          <textarea class="text-input" id="websites-input-field" rows="5" cols="25" wrap="hard" spellcheck="false"></textarea>
+        </div>
+        <div class="settings-container">
+          <button id="addsite" style="display: none;">Add</button>
+        </div>
+      </div>
     </div>
-    <div class="settings-container">
-      <label class="setting-label" for="websites-input-field">Manga Sites</label>
-      <textarea class="text-input" id="websites-input-field" rows="5" cols="25" wrap="hard" spellcheck="false"></textarea>
-    </div>
-    <div class="settings-container">
-      <button id="addsite" style="display: none;">Add</button>
-    </div>
+    
+    <hr />
     <div class="settings-container">
       <button id="run">Colorize!</button>
       <button id="force-run">Force Colorize!</button>

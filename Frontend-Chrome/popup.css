@@ -144,3 +144,71 @@ button:disabled {
   cursor: not-allowed;
   border: 1px solid lightgrey;
 }
+
+/* Category styles */
+.category {
+  margin: 5px 0;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: #1a1818;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease;
+}
+
+.category-header:hover {
+  background-color: #2a2525;
+}
+
+.category-arrow {
+  font-size: 10px;
+  color: red;
+  margin-right: 8px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  min-width: 12px;
+}
+
+.category-title {
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.category-content {
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.category-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* Select dropdown styling */
+select.text-input {
+  min-width: 150px;
+  height: 37px;
+  padding: 5px;
+  background-color: black;
+  border: 1px solid white;
+  color: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+select.text-input:focus {
+  border-color: red;
+  outline: none;
+}
+
+select.text-input option {
+  background-color: black;
+  color: white;
+}

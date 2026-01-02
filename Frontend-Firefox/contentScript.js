@@ -22,6 +22,9 @@ if (window.injectedMC !== 1) {
   var tone = "neutral"; // Tone adjustment theme: neutral, bright, dark, warm, cool, vibrant, pastel
   var referenceImageURL = ""; // URL to reference image for custom color tone
   var brightness = 1.0; // CSS brightness filter value (0.0 - 3.0)
+  var contrast = 1.0; // CSS contrast filter value (0.0 - 3.0)
+  var saturation = 1.0; // CSS saturation filter value (0.0 - 3.0)
+  var hueRotate = 0; // CSS hue-rotate filter value (0 - 360 degrees)
 
   var showOriginal = false; // Shows original image, if processed (colorized)
   var showColorized = true; // Shows processed image, if processed (colorized)
@@ -234,7 +237,7 @@ if (window.injectedMC !== 1) {
           imgClone.dataset.isCloned = true;
 
           img.src = json.colorImgData;
-          img.style.filter = `brightness(${brightness})`;
+          img.style.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation}) hue-rotate(${hueRotate}deg)`;
           if (img.dataset?.src) img.dataset.src = "";
           if (img.srcset) img.srcset = "";
 
@@ -480,6 +483,9 @@ if (window.injectedMC !== 1) {
           "minImgHeight",
           "minImgHeight",
           "brightness",
+          "contrast",
+          "saturation",
+          "hueRotate",
         ],
         (result) => {
           apiURL = result.apiURL;
@@ -500,6 +506,9 @@ if (window.injectedMC !== 1) {
                 ? result.referenceImageURL
                 : "";
             brightness = result.brightness || 1.0;
+            contrast = result.contrast || 1.0;
+            saturation = result.saturation || 1.0;
+            hueRotate = result.hueRotate || 0;
 
             const storedColorTolerance = result.colorTolerance;
             const storedColorStride = result.colorStride;
@@ -624,12 +633,12 @@ if (window.injectedMC !== 1) {
     });
   }
 
-  function updateBrightness(brightness) {
+  function updateFilters(filters) {
     const coloredImages = document.querySelectorAll(
       'img[data-is-colored="true"]'
     );
     coloredImages.forEach((img) => {
-      img.style.filter = `brightness(${brightness})`;
+      img.style.filter = `brightness(${filters.brightness}) contrast(${filters.contrast}) saturate(${filters.saturation}) hue-rotate(${filters.hueRotate}deg)`;
     });
   }
 
@@ -648,6 +657,19 @@ if (window.injectedMC !== 1) {
     }
     if (request.action === "updateBrightness") {
       console.log("[MC] Updating brightness: ", request.brightness);
+      brightness = request.brightness;
+      updateFilters({ brightness, contrast, saturation, hueRotate });
+    }
+    if (request.action === "updateFilters") {
+      console.log("[MC] Updating filters:", request.filters);
+      brightness = request.filters.brightness || brightness;
+      contrast = request.filters.contrast || contrast;
+      saturation = request.filters.saturation || saturation;
+      hueRotate =
+        request.filters.hueRotate !== undefined
+          ? request.filters.hueRotate
+          : hueRotate;
+      updateFilters({ brightness, contrast, saturation, hueRotate });
       brightness = request.brightness;
       updateBrightness(brightness);
     }
