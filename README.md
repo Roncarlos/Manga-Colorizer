@@ -182,6 +182,34 @@ For developers and users who prefer to self-host, the original instructions cont
 11. Add the manga website in the list.
 12. Press 'Colorize!' and enjoy!.
 
+## Training Your Own Model:
+
+Want to train the colorizer on your own manga pages? We've got you covered!
+
+### Quick Start
+
+1. **Prepare your dataset**: Create `bw/` and `color/` directories with paired images
+2. **Train**: `cd Backend/training && python train.py --data_dir ../../your_data --epochs 50`
+3. **Bundle**: `python bundle_model.py --input training_output/generator_final.pth --output ../networks/my_model.zip`
+4. **Deploy**: Replace `Backend/networks/generator.zip` with your trained model
+
+### Resources
+
+- 📖 **[Complete Training Guide](Backend/training/TRAINING.md)** - Detailed instructions, tips, and troubleshooting
+- 🚀 **[Quick Start Guide](Backend/training/TRAINING_QUICKSTART.md)** - Get training in 5 minutes
+- ✅ **Dataset Validator**: `python Backend/training/validate_dataset.py your_data_dir`
+- 📦 **Model Bundler**: `python Backend/training/bundle_model.py --help`
+
+### Requirements
+
+- **GPU**: NVIDIA GPU with 8GB+ VRAM recommended
+- **Data**: 100+ paired BW/color manga pages (1000+ for best results)
+- **Time**: 2-24 hours depending on dataset size
+
+See [Backend/training/TRAINING.md](Backend/training/TRAINING.md) for detailed instructions.
+
+---
+
 ## Credits:
 
 - https://github.com/qweasdd/manga-colorization-v2 by <a href="https://github.com/qweasdd">qweasdd</a> for AI Model and Weights.

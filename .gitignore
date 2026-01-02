@@ -4,4 +4,5 @@ Backendx/networks/generator.zip
 Backend/networks/generator.zip
 Backendx/manga/*
 .vs/
-
+generator_extracted/
+.venv/
