@@ -1,4 +1,5 @@
 # Manga-Colorizer
+
 Introducing Manga-Colorizer, a tool that brings your mangas to life!
 
 ---
@@ -9,13 +10,13 @@ For users who want a seamless, one-click experience with zero setup, we are thri
 
 It's the official, fully managed version of this project, available as a browser extension for both Chrome and Firefox. It's the easiest and most powerful way to enjoy AI-powered manga colorization.
 
-| Feature                 | MangaColorizerPro (Official) | This Project (Self-Hosted) |
-| ----------------------- | :--------------------------: | :------------------------: |
-| **Setup Required**      |             None             |      Yes (Server + Client)        |
-| **AI Backend**          |      Managed & Optimized     |       Own GPU / Kaggle's GPU      |
-| **Automatic Updates**   |              ✅              |           Manual                  |
-| **Premium Features**    |              ✅              |               ✅                  |
-| **Direct Support**      |              ✅              |      Community / Issues           |
+| Feature               | MangaColorizerPro (Official) | This Project (Self-Hosted) |
+| --------------------- | :--------------------------: | :------------------------: |
+| **Setup Required**    |             None             |   Yes (Server + Client)    |
+| **AI Backend**        |     Managed & Optimized      |   Own GPU / Kaggle's GPU   |
+| **Automatic Updates** |              ✅              |           Manual           |
+| **Premium Features**  |              ✅              |             ✅             |
+| **Direct Support**    |              ✅              |     Community / Issues     |
 
 - [Install for Chrome](https://chromewebstore.google.com/detail/mangacolorizerpro/ofeggeimdlfipekkabopihemnefgkapk)
 - [Install for Firefox](https://addons.mozilla.org/en-US/firefox/addon/mangacolorizerpro/)
@@ -27,13 +28,15 @@ For developers and users who prefer to self-host, the original instructions cont
 ---
 
 ## Demo Video - PC:
+
 [![DEMO VIDEO](https://github.com/user-attachments/assets/6737808a-8ad1-4dd3-b642-34c8020ebd98)](https://youtu.be/aD0jUb-vPOo)
 
-
 ## Demo Video - Android:
+
 [DEMO VIDEO](https://drive.google.com/file/d/15Rw4aykO_7Gedj6sR50gAiIiaTjHLr6o/view?usp=sharing)
 
 ## New Features:
+
 - [x] Now works seamlessly on any website.
 - [x] Blazingly fast image colorization on the fly.
 - [x] Intelligent and dynamic colorization.
@@ -41,17 +44,17 @@ For developers and users who prefer to self-host, the original instructions cont
 - [x] Additional settings for more customization options.
 - [x] Organized caching into a dedicated folder for reuse.
 - [x] Options to display original, colorized version, or both.
-- [x] Force colorization. 
+- [x] Force colorization.
 
 ## Notes:
+
 - Old legacy project can be found <a href="https://github.com/BinitDOX/Manga-Colorizer/tree/main">here</a>.
 - Follow any one of the server and one of client usage instructions.
 
+## Server Usage Instructions | Local Hosting:
 
-
-## Server Usage Instructions | Local Hosting: 
 0. Local hosting is recommended if you have access to a cuda GPU.
-1. Clone or download this repository as .zip and extract. 
+1. Clone or download this repository as .zip and extract.
 2. Download the <a href="https://drive.google.com/file/d/1qmxUEKADkEM4iYLp1fpPLLKnfZ6tcF-t/view?usp=sharing" rel="nofollow">Generator</a> weights and move it to <code>Backend/networks</code> folder.
 3. Install <a href="https://www.python.org/downloads/">python</a> and setup <a href="https://pytorch.org/get-started/locally/">pytorch</a> if not already done.
 4. In the Backend folder, open a command prompt, and run:
@@ -60,8 +63,34 @@ For developers and users who prefer to self-host, the original instructions cont
    - Backend should be running on localhost (https://127.0.0.1:5000) and Private IP (https://x.x.x.x:5000)
 5. Next, follow any of the 'Client Usage Instructions'.
 
+## Server Usage Instructions | Local Hosting with Docker Compose:
 
-## Server Usage Instructions | Online Hosting: 
+0. This method is recommended for easy setup with containerized deployment.
+1. **Prerequisites:**
+   - Install <a href="https://www.docker.com/get-started">Docker</a> and Docker Compose on your system.
+   - For GPU acceleration, install <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html">NVIDIA Container Toolkit</a>.
+2. Clone or download this repository as .zip and extract.
+3. Download the <a href="https://drive.google.com/file/d/1qmxUEKADkEM4iYLp1fpPLLKnfZ6tcF-t/view?usp=sharing" rel="nofollow">Generator</a> weights and move it to <code>Backend/networks</code> folder.
+4. Open a command prompt in the root directory and run:
+   - **For CPU-only systems:**
+     ```bash
+     docker-compose -f docker-compose.cpu.yml up -d
+     ```
+   - **For systems with NVIDIA GPU:**
+     ```bash
+     docker-compose -f docker-compose.gpu.yml up -d
+     ```
+5. The backend will be running on localhost (http://localhost:5000) and your Private IP (http://x.x.x.x:5000).
+6. To stop the service:
+   ```bash
+   docker-compose -f docker-compose.cpu.yml down
+   # or for GPU:
+   docker-compose -f docker-compose.gpu.yml down
+   ```
+7. Next, follow any of the 'Client Usage Instructions'.
+
+## Server Usage Instructions | Online Hosting:
+
 0. Online hosting is recommended if you don't have access to a cuda GPU or you do not want to keep your system/server on, while reading on a mobile.
 1. Make a <a href="https://www.kaggle.com/">kaggle</a> account and verify using phone to get ~30hrs of weekly GPU.
 2. Make an <a href="https://ngrok.com/">ngrok</a> account and get your auth token from <a href="https://dashboard.ngrok.com/get-started/your-authtoken">here</a>
@@ -78,15 +107,15 @@ For developers and users who prefer to self-host, the original instructions cont
 13. You may also now click 'Save Version' on the notebook, then 'Save and Run All (Compile)' to keep the notebook running (it will re-run) even after you turn off your system.
 14. After a few minutes, visit <a href="https://dashboard.ngrok.com/tunnels/agents">here</a> to get the running sessions and get the new API URL and use that for the client.
 
+## Client Usage Instructions | PC | Firefox:
 
-## Client Usage Instructions | PC | Firefox: 
 0. Open the server URL:
    - Use localhost (local-hosting) (https://127.0.0.1:5000) or,
    - Private IP (local-hosting) (Ex. https://x.x.x.x:5000) or,
    - The ngrokURL (online-hosting) (Ex. https://314-1342-142-43.ngrok-free.app).
-      - It will show some certificate warning, as it is self-signed.
-      - Click 'Advanced' and click 'Accept the risk and continue'.
-      - You should now see 'Manga Colorizer is Up and Running!'
+     - It will show some certificate warning, as it is self-signed.
+     - Click 'Advanced' and click 'Accept the risk and continue'.
+     - You should now see 'Manga Colorizer is Up and Running!'
 1. Open the firefox <a href="about:debugging#/runtime/this-firefox">debugging</a> page and click 'Load Temporary Add-on'.
 2. Navigate to the Frontend-Firefox directory and choose manifest.json.
 3. If the extension loads correctly, you will see it's settings page.
@@ -101,8 +130,8 @@ For developers and users who prefer to self-host, the original instructions cont
 12. Press 'Colorize!' and enjoy!.
 13. These steps have to be repeated everytime firefox is started.
 
+## Client Usage Instructions | PC | Chrome/Brave/Any-Chromium:
 
-## Client Usage Instructions | PC | Chrome/Brave/Any-Chromium: 
 0. Open the server URL:
    - Use localhost (local-hosting) (https://127.0.0.1:5000) or,
    - Private IP (local-hosting) (Ex. https://x.x.x.x:5000) or,
@@ -120,8 +149,8 @@ For developers and users who prefer to self-host, the original instructions cont
 8. Press the 'Add ...' button to add the site to the list of Manga Sites, so it automatically colors images from now on.
 9. Press 'Colorize!' and enjoy!.
 
-
 ## Client Usage Instructions | Android | Firefox Nightly:
+
 1. First, goto 'Frontend-Firefox' folder and zip all the files.
 2. Select all the files, then right-click, Send to, Compressed (zip) folder.
 3. Rename this zip file to 'Frontend-Firefox.zip' and move it to your android device.
@@ -138,8 +167,8 @@ For developers and users who prefer to self-host, the original instructions cont
 14. Press 'Colorize!' and enjoy!.
 15. Unfortunately, only Step-8 has to be repeated at every chapter because of permission issues, so Kiwi Browser is recommended.
 
-
 ## Client Usage Instructions | Android | Kiwi/Any-Chromium (\w extension):
+
 1. First on PC Chrome, go to <a href="chrome://extensions/">extension</a> settings and click 'Pack extension' on top-left.
 2. Click browse, then navigate and choose the Frontend-Chrome folder and click 'Pack extension'.
 3. This will create a 'Frontend-Chrome.crx' file. Move this file to your android device.
@@ -153,8 +182,8 @@ For developers and users who prefer to self-host, the original instructions cont
 11. Add the manga website in the list.
 12. Press 'Colorize!' and enjoy!.
 
-
 ## Credits:
+
 - https://github.com/qweasdd/manga-colorization-v2 by <a href="https://github.com/qweasdd">qweasdd</a> for AI Model and Weights.
 - https://github.com/xiaogdgenuine/Manga-Colorization-FJ by <a href="https://github.com/xiaogdgenuine">xiaogdgenuine</a> for Upscaler integration.
 - https://github.com/xinntao/Real-ESRGAN by <a href="https://github.com/xinntao">xinntao</a> for the Upscaler (ESR-GAN).
