@@ -6,6 +6,7 @@ if (window.injectedMC !== 1) {
   // Dynamic private variables
   var activeFetches = 0;
   var isSelecting = false;
+  var mcColorizedImages = new WeakSet(); // Images we colorized; reliable even if DOM data-* attrs get reset
 
   // Configuration variables
   var apiURL = "";
@@ -243,6 +244,7 @@ if (window.injectedMC !== 1) {
           const imgClone = img.cloneNode(true);
           img.dataset.isColored = true;
           img.dataset.isProcessed = true;
+          mcColorizedImages.add(img); // Remember our output so we never re-colorize it
           imgClone.dataset.isCloned = true;
 
           img.src = json.colorImgData;
@@ -349,6 +351,14 @@ if (window.injectedMC !== 1) {
   const colorizeImg = (index, img, apiURL, force, mangaProps) => {
     if (apiURL)
       try {
+        // Skip images we already colorized: our output is a data: URL tracked in
+        // mcColorizedImages. Reliable even when the grayscale/MSE check can't detect
+        // low-saturation output, or when observers strip the data-is-colored attrs.
+        if (!force && img.src.startsWith("data:") && mcColorizedImages.has(img)) {
+          img.dataset.isColored = true;
+          img.dataset.isProcessed = true;
+          return 1;
+        }
         const imageName = mangaProps.altText ? img.alt : "";
         const imgName =
           imageName || (img.src || img.dataset?.src || "").rsplit("/", 1)[1];
