@@ -4,6 +4,7 @@ const maxActiveFetches = document.getElementById(
 );
 const showOriginalCheckbox = document.getElementById("showoriginal-checkbox");
 const showColorizedCheckbox = document.getElementById("showcolorized-checkbox");
+const sideBySideCheckbox = document.getElementById("sidebyside-checkbox");
 const cacheCheckbox = document.getElementById("cache-checkbox");
 const denoiseCheckbox = document.getElementById("denoiser-checkbox");
 const colorizeCheckbox = document.getElementById("colorizer-checkbox");
@@ -92,6 +93,7 @@ chrome.storage.local.get(
     "maxActiveFetches",
     "showOriginal",
     "showColorized",
+    "sideBySide",
     "cache",
     "denoise",
     "colorize",
@@ -116,6 +118,8 @@ chrome.storage.local.get(
       result.showOriginal !== undefined ? result.showOriginal : false;
     showColorizedCheckbox.checked =
       result.showColorized !== undefined ? result.showColorized : true;
+    sideBySideCheckbox.checked =
+      result.sideBySide !== undefined ? result.sideBySide : false;
     cacheCheckbox.checked = result.cache !== undefined ? result.cache : false;
     denoiseCheckbox.checked =
       result.denoise !== undefined ? result.denoise : true;
@@ -509,10 +513,12 @@ resetFiltersBtn.addEventListener("click", () => {
 function updateVisibility() {
   const showOriginal = showOriginalCheckbox.checked;
   const showColorized = showColorizedCheckbox.checked;
+  const sideBySide = sideBySideCheckbox.checked;
 
   chrome.storage.local.set({
     showOriginal: showOriginalCheckbox.checked,
     showColorized: showColorizedCheckbox.checked,
+    sideBySide: sideBySideCheckbox.checked,
   });
 
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -520,6 +526,7 @@ function updateVisibility() {
       action: "toggleVisibility",
       showOriginal: showOriginal,
       showColorized: showColorized,
+      sideBySide: sideBySide,
     });
   });
 }
@@ -544,6 +551,7 @@ runButton.addEventListener("click", () => {
     maxActiveFetches: maxActiveFetches.value.trim(),
     showOriginal: showOriginalCheckbox.checked,
     showColorized: showColorizedCheckbox.checked,
+    sideBySide: sideBySideCheckbox.checked,
     cache: cacheCheckbox.checked,
     denoise: denoiseCheckbox.checked,
     colorize: colorizeCheckbox.checked,
@@ -586,6 +594,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 showOriginalCheckbox.addEventListener("change", updateVisibility);
 showColorizedCheckbox.addEventListener("change", updateVisibility);
+sideBySideCheckbox.addEventListener("change", updateVisibility);
 
 toneSelector.addEventListener("change", () => {
   const referenceImageContainer = document.getElementById(

@@ -5,8 +5,15 @@ numpy
 opencv_python_headless
 scikit_image
 einops
+ftfy
+regex
 # torch
 # torchvision
+# CLIP (for text-guided colorization)
+git+https://github.com/openai/CLIP.git
+# rembg (for background/character segmentation - works well with anime)
+rembg[gpu]
+onnxruntime-gpu
 # Instead of including PyTorch in this file, 
 # first install the other requirements above with:
 # pip install -r requirements.txt
