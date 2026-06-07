@@ -28,6 +28,7 @@ if (window.injectedMC !== 1) {
 
   var showOriginal = false; // Shows original image, if processed (colorized)
   var showColorized = true; // Shows processed image, if processed (colorized)
+  var sideBySide = false; // When original + colorized are both shown, lay them out side by side instead of stacked
 
   var siteConfigFile = "siteConfig.json"; // Manga detail selector queries for organized caching
   let siteConfigurations = null; // siteConfig.json is loaded in this variable
@@ -45,12 +46,20 @@ if (window.injectedMC !== 1) {
 
   function injectCSS() {
     const css = `
-            .isHidden {
-                display: none !important;
+            .mc-side-by-side {
+                display: inline-block !important;
+                width: 49% !important;
+                height: auto !important;
+                margin: 0 0.5% !important;
+                vertical-align: top !important;
+                box-sizing: border-box !important;
             }
             .highlight {
                 border: 2px solid red !important;
                 cursor: crosshair !important;
+            }
+            .isHidden {
+                display: none !important;
             }
         `;
     const style = document.createElement("style");
@@ -470,6 +479,7 @@ if (window.injectedMC !== 1) {
           "maxActiveFetches",
           "showOriginal",
           "showColorized",
+          "sideBySide",
           "cache",
           "denoise",
           "colorize",
@@ -493,6 +503,7 @@ if (window.injectedMC !== 1) {
             maxActiveFetches = Number(result.maxActiveFetches || "1");
             showOriginal = result.showOriginal;
             showColorized = result.showColorized;
+            sideBySide = result.sideBySide || false;
 
             cache = result.cache;
             denoise = result.denoise;
@@ -612,7 +623,7 @@ if (window.injectedMC !== 1) {
     }
   };
 
-  function toggleImageVisibility(showOriginal, showColorized) {
+  function toggleImageVisibility(showOriginal, showColorized, sideBySideMode = sideBySide) {
     const coloredImages = document.querySelectorAll(
       'img[data-is-colored="true"][data-in-view="true"]'
     );
@@ -620,16 +631,25 @@ if (window.injectedMC !== 1) {
       'img[data-is-cloned="true"][data-in-view="true"]'
     );
 
+    // Side by side only makes sense when both versions are visible at once
+    const useSideBySide = sideBySideMode && showOriginal && showColorized;
+
     coloredImages.forEach((img) => {
       showColorized
         ? img.classList.remove("isHidden")
         : img.classList.add("isHidden");
+      useSideBySide
+        ? img.classList.add("mc-side-by-side")
+        : img.classList.remove("mc-side-by-side");
     });
 
     clonedImages.forEach((img) => {
       showOriginal
         ? img.classList.remove("isHidden")
         : img.classList.add("isHidden");
+      useSideBySide
+        ? img.classList.add("mc-side-by-side")
+        : img.classList.remove("mc-side-by-side");
     });
   }
 
@@ -645,7 +665,12 @@ if (window.injectedMC !== 1) {
   browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "toggleVisibility") {
       console.log("[MC] Image visibility toggled");
-      toggleImageVisibility(request.showOriginal, request.showColorized);
+      if (request.sideBySide !== undefined) sideBySide = request.sideBySide;
+      toggleImageVisibility(
+        request.showOriginal,
+        request.showColorized,
+        sideBySide
+      );
     }
     if (request.action === "runColorizer") {
       console.log("[MC] Running colorizer");
